@@ -4,11 +4,10 @@ import javazoom.jl.converter.Converter;
 import javazoom.jl.decoder.JavaLayerException;
 import org.jboss.logging.Logger;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.UUID;
 
 public class FileUtils {
@@ -48,12 +47,12 @@ public class FileUtils {
     }
 
     public static File createTempFile(byte[] bytes) throws IOException {
-        FileUtils.createFolderIfNotExists("/tmp");
+        FileUtils.createFolderIfNotExists("tmp");
 
-        String filePath = "/tmp/" + UUID.randomUUID().toString() + ".au";
-        FileOutputStream fos = new FileOutputStream(filePath);
-        fos.write(bytes);
-        fos.close();
+        String filePath = "tmp/" + UUID.randomUUID().toString() + ".au";
+        Path path = Paths.get(filePath);
+        Files.createFile(path);
+        Files.write(path, bytes);
 
         return new File(filePath);
     }
@@ -78,9 +77,15 @@ public class FileUtils {
     }
 
     private static void createFolderIfNotExists(String folderPath) {
-        File f = new File(folderPath);
-        if (f.exists()) {
-            f.mkdir();
+        Path path = Paths.get(folderPath);
+        if (Files.notExists(path)) {
+            try {
+                LOGGER.info("Directory has been created at path: " + path);
+                Files.createDirectories(path);
+            } catch (IOException e) {
+                LOGGER.error("Directory could not be created at path: " + path, e);
+                e.printStackTrace();
+            }
         }
     }
 }
