@@ -17,7 +17,7 @@ import java.util.Map;
 @Component
 public class ImagePredictorServiceImpl implements ImagePredictorService {
 
-  private final String[] preditionTypes =
+  private final String[] predictionTypes =
       new String[] {
         "blues", "classical", "country", "disco", "hiphop", "jazz", "metal", "pop", "reggae", "rock"
       };
@@ -41,7 +41,7 @@ public class ImagePredictorServiceImpl implements ImagePredictorService {
     if (predictedValues != null) {
       Map<String, Float> predictionMap = new HashMap<>();
       for (int i = 0; i < predictedValues.length; ++i) {
-        predictionMap.put(preditionTypes[i], predictedValues[i]);
+        predictionMap.put(predictionTypes[i], predictedValues[i]);
       }
       ProcessedAudioTypeDTO mainType = getMainType(predictionMap);
       if (mainType != null) {

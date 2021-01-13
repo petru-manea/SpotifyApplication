@@ -58,7 +58,7 @@ public class ProcessedAudioDAOImpl extends GenericDAOImpl<ProcessedAudioEntity, 
   public List<ProcessedAudioEntity> findByGenre(PredictedTypeEntity genre) {
     TypedQuery<ProcessedAudioEntity> query =
             getEntityManager().createNamedQuery(ProcessedAudioEntity.FIND_BY_GENRE, ProcessedAudioEntity.class);
-    query.setParameter("genre", "%" + genre.name() + "%");
+    query.setParameter("genre", genre);
     return query.getResultList();
   }
 

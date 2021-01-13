@@ -14,6 +14,8 @@ public class ProcessedAudioDTO implements Serializable {
 
     private String filename;
 
+    private String fileType;
+
     private MultipartFile file;
 
     private ProcessedAudioTypeDTO mainType;

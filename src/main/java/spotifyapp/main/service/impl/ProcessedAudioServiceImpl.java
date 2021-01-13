@@ -75,4 +75,9 @@ public class ProcessedAudioServiceImpl implements ProcessedAudioService {
     return processedAudioMapper.mapEntitiesToDtos(
         processedAudioDAO.findByGenre(predictedTypeMapper.mapDtoToEntity(genre)));
   }
+
+  @Override
+  public byte[] getProcessedAudioFileById(String id) {
+    return processedAudioDAO.findById(Integer.parseInt(id)).getFile();
+  }
 }

@@ -2,12 +2,18 @@ package spotifyapp.main.controller;
 
 import org.jboss.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.ContentDisposition;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import spotifyapp.main.config.ResponseWrapper;
 import spotifyapp.main.model.dto.PredictedTypeDTO;
@@ -30,11 +36,11 @@ public class ProcessedAudioController {
     this.processedAudioService = processedAudioService;
   }
 
-  @GetMapping(path = "/song", produces = MediaType.APPLICATION_JSON_VALUE)
+  @GetMapping(path = "/song/all", produces = MediaType.APPLICATION_JSON_VALUE)
   public @ResponseBody ResponseWrapper<List<ProcessedAudioDTO>> getAllSongs(
       HttpServletRequest httpRequest) {
 
-    String urlParams = "/song";
+    String urlParams = "/song/all";
 
     ResponseWrapper<List<ProcessedAudioDTO>> responseWrapper = new ResponseWrapper<>();
 
@@ -65,7 +71,7 @@ public class ProcessedAudioController {
 
   @GetMapping(path = "/song/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
   public @ResponseBody ResponseWrapper<ProcessedAudioDTO> getSongById(
-          @PathVariable("id") String id, HttpServletRequest httpRequest) {
+      @PathVariable("id") String id, HttpServletRequest httpRequest) {
 
     String urlParams = "/song?" + "id=" + id;
 
@@ -88,9 +94,34 @@ public class ProcessedAudioController {
     return responseWrapper;
   }
 
-  @GetMapping(path = "/song/{genre}", produces = MediaType.APPLICATION_JSON_VALUE)
+  @GetMapping(path = "/song/{id}/audio", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+  public @ResponseBody ResponseEntity<Resource> getSongAudioById(
+      @PathVariable("id") String id, HttpServletRequest httpRequest) {
+
+    String urlParams = "/song/" + id + "/audio";
+
+    ProcessedAudioDTO processedAudioDTO = processedAudioService.getProcessedAudioById(id);
+    byte[] audioFile = processedAudioService.getProcessedAudioFileById(id);
+
+    if (processedAudioDTO == null) {
+      LOGGER.error("Error: Song not found!");
+      return ResponseEntity.notFound().build();
+    }
+    if (audioFile == null) {
+      LOGGER.error("Error: Audio file not found!");
+      return ResponseEntity.notFound().build();
+    }
+    ContentDisposition contentDisposition =
+        ContentDisposition.builder("attachment").filename(processedAudioDTO.getFilename()).build();
+    return ResponseEntity.ok()
+        .contentType(MediaType.parseMediaType(processedAudioDTO.getFileType()))
+        .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition.toString())
+        .body(new ByteArrayResource(audioFile));
+  }
+
+  @GetMapping(path = "/song", produces = MediaType.APPLICATION_JSON_VALUE)
   public @ResponseBody ResponseWrapper<List<ProcessedAudioDTO>> getSongByGenre(
-          @PathVariable("genre") String genre, HttpServletRequest httpRequest) {
+      @RequestParam("genre") String genre, HttpServletRequest httpRequest) {
 
     String urlParams = "/song?" + "genre=" + genre;
 
@@ -98,14 +129,15 @@ public class ProcessedAudioController {
 
     PredictedTypeDTO predictedTypeDTO = PredictedTypeDTO.get(genre);
 
-    if(predictedTypeDTO == null){
+    if (predictedTypeDTO == null) {
       LOGGER.error("Error: No genre of type + " + genre + "!");
       responseWrapper.setData(null);
       responseWrapper.setStatus(HttpStatus.BAD_REQUEST);
       responseWrapper.setUrlParams(urlParams);
       responseWrapper.setError("Error: No genre of type + " + genre + "!");
     } else {
-      List<ProcessedAudioDTO> result = processedAudioService.getProcessedAudiosByGenre(predictedTypeDTO);
+      List<ProcessedAudioDTO> result =
+          processedAudioService.getProcessedAudiosByGenre(predictedTypeDTO);
       if (result == null) {
         LOGGER.error("Error: Songs could not be retrieved!");
         responseWrapper.setData(null);

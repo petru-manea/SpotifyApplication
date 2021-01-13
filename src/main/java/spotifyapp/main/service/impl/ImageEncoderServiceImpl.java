@@ -27,7 +27,7 @@ public class ImageEncoderServiceImpl implements ImageEncoderService, AutoCloseab
     public ImageEncoderServiceImpl() {
         try {
             byte[] inputStreamBytes =
-                    FileUtils.getBytes(Files.asByteSource(new File("models/cifar10.pb")).openStream());
+                    FileUtils.getBytes(Files.asByteSource(new File("models/resnet-v2.pb")).openStream());
             graph.importGraphDef(inputStreamBytes);
         } catch (IOException e) {
             LOGGER.error("Could not initiate graph in ImageEncoder! " + e.getMessage());
@@ -43,7 +43,7 @@ public class ImageEncoderServiceImpl implements ImageEncoderService, AutoCloseab
         try (Session sess = new Session(graph);
              Tensor<Float> result =
                      sess.runner()
-                             .feed("conv2d_1_input:0", imageTensor)
+                             .feed("input_1:0", imageTensor)
                              .fetch("output_node0:0")
                              .run()
                              .get(0)

@@ -1,12 +1,15 @@
 package spotifyapp.main.model.mapper;
 
+import org.apache.tomcat.util.http.fileupload.disk.DiskFileItem;
 import org.jboss.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
 import spotifyapp.main.model.dto.ProcessedAudioDTO;
 import spotifyapp.main.model.dto.ProcessedAudioTypeDTO;
 import spotifyapp.main.model.entity.ProcessedAudioEntity;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,6 +57,7 @@ public class ProcessedAudioMapper {
     ProcessedAudioDTO dto = new ProcessedAudioDTO();
     dto.setId(entity.getId());
     dto.setFilename(entity.getFilename());
+    dto.setFileType(entity.getFileType());
     dto.setDescription(entity.getDescription());
     dto.setSuccess(entity.getSuccess());
     //        dto.setPredictedType(predictedTypeMapper.mapEntityToDto(entity.getPredictedType()));
@@ -79,7 +83,13 @@ public class ProcessedAudioMapper {
     ProcessedAudioEntity entity = new ProcessedAudioEntity();
     entity.setId(dto.getId());
     entity.setFilename(dto.getFilename());
+    entity.setFileType(dto.getFileType());
     entity.setDescription(dto.getDescription());
+    try {
+      entity.setFile(dto.getFile().getBytes());
+    } catch (IOException e) {
+      LOGGER.error("Could not convert from DTO to Entity: " + e.getMessage());
+    }
     entity.setSuccess(dto.getSuccess());
     //        entity.setPredictedType(predictedTypeMapper.mapDtoToEntity(dto.getPredictedType()));
     entity.setMainPredictedType(

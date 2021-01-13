@@ -63,6 +63,8 @@ public class ClassifierController {
         ProcessedAudioDTO result = new ProcessedAudioDTO();
         result.setDescription(processedAudioDTO.getDescription());
         result.setFilename(processedAudioDTO.getFilename());
+        result.setFile(file);
+        result.setFileType(file.getContentType());
 
         try {
             byte[] bytes = processedAudioDTO.getFile().getBytes();
@@ -128,4 +130,86 @@ public class ClassifierController {
 //
 //        return responseWrappers;
 //    }
+
+    @PostMapping(path = "/classifyTest", produces = MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody ResponseWrapper<ProcessedAudioDTO> classifySong(
+            @RequestParam("description") String description,
+            @RequestParam("filename") String filename,
+            @RequestParam("file") MultipartFile file,
+            HttpServletRequest httpRequest) {
+
+        //  public ResponseWrapper<ProcessedAudioDTO> classifySong(ProcessedAudioDTO processedAudioDTO)
+        // {
+        //    String urlParams =
+        //        "/classify?"
+        //            + "&description="
+        //            + processedAudioDTO.getDescription()
+        //            + "&filename="
+        //            + processedAudioDTO.getFilename()
+        //            + "&file="
+        //            + processedAudioDTO.getFile();
+
+        String urlParams =
+                "/classify?" + "&description=" + description + "&filename=" + filename + "&file=" + file;
+
+        ResponseWrapper<ProcessedAudioDTO> responseWrapper = new ResponseWrapper<>();
+
+        ProcessedAudioDTO result = new ProcessedAudioDTO();
+        //    result.setDescription(processedAudioDTO.getDescription());
+        //    result.setFilename(processedAudioDTO.getFilename());
+        result.setDescription(description);
+        result.setFilename(filename);
+        result.setFileType(file.getContentType());
+        result.setFile(file);
+
+        try {
+            //      byte[] bytes = processedAudioDTO.getFile().getBytes();
+            byte[] bytes = file.getBytes();
+            LOGGER.info("audio bytes received: " + bytes.length);
+
+            File audioFile = FileUtils.createTempFile(bytes);
+
+            List<ProcessedAudioTypeDTO> predictedTypes = classifierService.convertAndPredict(audioFile);
+
+            if (predictedTypes != null && !predictedTypes.isEmpty()) {
+                LOGGER.info("Main Type: " + predictedTypes.get(0));
+                result.setMainType(predictedTypes.get(0));
+                if (predictedTypes.size() == 2) {
+                    LOGGER.info("Sub Type: " + predictedTypes.get(1));
+                    result.setSubType(predictedTypes.get(1));
+                }
+            } else {
+                LOGGER.error("Failed to process the uploaded image!");
+                result.setMainType(new ProcessedAudioTypeDTO(PredictedTypeDTO.UNKNOWN, Float.MIN_VALUE));
+            }
+
+            FileUtils.deleteFile(audioFile);
+
+            //      LOGGER.info("predicted: " + predictedType.getName());
+            //      result.setPredictedType(predictedType);
+
+            result.setSuccess(true);
+
+            ProcessedAudioDTO savedProcessedAudio = processedAudioService.saveProcessedAudio(result);
+
+            responseWrapper.setData(savedProcessedAudio);
+            responseWrapper.setStatus(HttpStatus.OK);
+            responseWrapper.setUrlParams(urlParams);
+
+        } catch (IOException ex) {
+            LOGGER.error("Failed to process the uploaded image", ex);
+
+            //      result.setPredictedType(PredictedTypeDTO.UNKNOWN);
+            result.setMainType(new ProcessedAudioTypeDTO(PredictedTypeDTO.UNKNOWN, Float.MIN_VALUE));
+
+            result.setSuccess(false);
+
+            responseWrapper.setData(result);
+            responseWrapper.setStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+            responseWrapper.setUrlParams(urlParams);
+            responseWrapper.setError("Error: " + ex.getMessage());
+        }
+
+        return responseWrapper;
+    }
 }

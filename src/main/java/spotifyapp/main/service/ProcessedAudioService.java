@@ -18,4 +18,6 @@ public interface ProcessedAudioService {
     ProcessedAudioDTO getProcessedAudioById(String id);
 
     List<ProcessedAudioDTO> getProcessedAudiosByGenre(PredictedTypeDTO genre);
+
+    byte[] getProcessedAudioFileById(String id);
 }
