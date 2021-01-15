@@ -10,11 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import spotifyapp.main.config.ResponseWrapper;
 import spotifyapp.main.model.dto.PredictedTypeDTO;
 import spotifyapp.main.model.dto.ProcessedAudioDTO;
@@ -24,6 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @Controller
+@CrossOrigin
 @RequestMapping(path = "/api/spotify")
 public class ProcessedAudioController {
 
