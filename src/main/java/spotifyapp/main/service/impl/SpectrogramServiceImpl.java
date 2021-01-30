@@ -57,10 +57,6 @@ public class SpectrogramServiceImpl implements SpectrogramService, PitchDetectio
                             File outputFile = new File(output_image_path);
 
                             if (outputFile.exists()) continue;
-//              BufferedImage bufferedImage =
-//                      new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
-//              FFTAudioProcessor audioProcessor = new FFTAudioProcessor(bufferedImage, WIDTH, HEIGHT);
-//              audioProcessor.init(bufferedImage, WIDTH, HEIGHT);
                             SpectrogramServiceImpl melGram = new SpectrogramServiceImpl();
                             BufferedImage image = melGram.convertAudio(f);
 

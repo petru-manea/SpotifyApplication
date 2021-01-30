@@ -36,10 +36,6 @@ public class ClassifierServiceImpl implements ClassifierService {
     try {
       image = spectrogramService.convertAudio(audioFile);
       if (image != null) {
-        //                String predict = imagePredictorService.predictImage(image);
-        //                if(predict != null){
-        //                    return PredictedTypeDTO.get(predict);
-        //                }
         return imagePredictorService.predictImage(image);
       }
     } catch (IOException
@@ -49,7 +45,6 @@ public class ClassifierServiceImpl implements ClassifierService {
       LOGGER.error(e.getMessage());
     }
     LOGGER.error("Image or Predict is null!");
-    //        return PredictedTypeDTO.UNKNOWN;
     return null;
   }
 }

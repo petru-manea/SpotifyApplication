@@ -37,7 +37,6 @@ public class ClassifierController {
         this.processedAudioService = processedAudioService;
     }
 
-    // TODO [PM]: In case it breaks uncomment this
     @PostMapping(path = "/classify",
             produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
@@ -47,7 +46,6 @@ public class ClassifierController {
             @RequestPart("file") MultipartFile file,
             HttpServletRequest httpRequest) {
 
-//  public ResponseWrapper<ProcessedAudioDTO> classifySong(ProcessedAudioDTO processedAudioDTO) {
         processedAudioDTO.setFile(file);
         String urlParams =
                 "/classify?"
@@ -85,12 +83,7 @@ public class ClassifierController {
                 LOGGER.error("Failed to process the uploaded image!");
                 result.setMainType(new ProcessedAudioTypeDTO(PredictedTypeDTO.UNKNOWN, Float.MIN_VALUE));
             }
-
             FileUtils.deleteFile(audioFile);
-
-            //      LOGGER.info("predicted: " + predictedType.getName());
-            //      result.setPredictedType(predictedType);
-
             result.setSuccess(true);
 
             ProcessedAudioDTO savedProcessedAudio = processedAudioService.saveProcessedAudio(result);
@@ -101,8 +94,6 @@ public class ClassifierController {
 
         } catch (IOException ex) {
             LOGGER.error("Failed to process the uploaded image", ex);
-
-            //      result.setPredictedType(PredictedTypeDTO.UNKNOWN);
             result.setMainType(new ProcessedAudioTypeDTO(PredictedTypeDTO.UNKNOWN, Float.MIN_VALUE));
 
             result.setSuccess(false);
@@ -116,21 +107,6 @@ public class ClassifierController {
         return responseWrapper;
     }
 
-//    @PostMapping(path = "/classify", produces = MediaType.APPLICATION_JSON_VALUE)
-//    public @ResponseBody
-//    List<ResponseWrapper<ProcessedAudioDTO>> classifyMultipleSongs(
-//            @RequestParam("processedAudioDtoList") List<ProcessedAudioDTO> processedAudioDTOList,
-//            HttpServletRequest httpRequest) {
-//
-//        List<ResponseWrapper<ProcessedAudioDTO>> responseWrappers = new ArrayList<>();
-//
-//        for (ProcessedAudioDTO dto : processedAudioDTOList) {
-//            responseWrappers.add(classifySong(dto));
-//        }
-//
-//        return responseWrappers;
-//    }
-
     @PostMapping(path = "/classifyTest", produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody ResponseWrapper<ProcessedAudioDTO> classifySong(
             @RequestParam("description") String description,
@@ -138,32 +114,18 @@ public class ClassifierController {
             @RequestParam("file") MultipartFile file,
             HttpServletRequest httpRequest) {
 
-        //  public ResponseWrapper<ProcessedAudioDTO> classifySong(ProcessedAudioDTO processedAudioDTO)
-        // {
-        //    String urlParams =
-        //        "/classify?"
-        //            + "&description="
-        //            + processedAudioDTO.getDescription()
-        //            + "&filename="
-        //            + processedAudioDTO.getFilename()
-        //            + "&file="
-        //            + processedAudioDTO.getFile();
-
         String urlParams =
                 "/classify?" + "&description=" + description + "&filename=" + filename + "&file=" + file;
 
         ResponseWrapper<ProcessedAudioDTO> responseWrapper = new ResponseWrapper<>();
 
         ProcessedAudioDTO result = new ProcessedAudioDTO();
-        //    result.setDescription(processedAudioDTO.getDescription());
-        //    result.setFilename(processedAudioDTO.getFilename());
         result.setDescription(description);
         result.setFilename(filename);
         result.setFileType(file.getContentType());
         result.setFile(file);
 
         try {
-            //      byte[] bytes = processedAudioDTO.getFile().getBytes();
             byte[] bytes = file.getBytes();
             LOGGER.info("audio bytes received: " + bytes.length);
 
@@ -185,9 +147,6 @@ public class ClassifierController {
 
             FileUtils.deleteFile(audioFile);
 
-            //      LOGGER.info("predicted: " + predictedType.getName());
-            //      result.setPredictedType(predictedType);
-
             result.setSuccess(true);
 
             ProcessedAudioDTO savedProcessedAudio = processedAudioService.saveProcessedAudio(result);
@@ -199,7 +158,6 @@ public class ClassifierController {
         } catch (IOException ex) {
             LOGGER.error("Failed to process the uploaded image", ex);
 
-            //      result.setPredictedType(PredictedTypeDTO.UNKNOWN);
             result.setMainType(new ProcessedAudioTypeDTO(PredictedTypeDTO.UNKNOWN, Float.MIN_VALUE));
 
             result.setSuccess(false);
