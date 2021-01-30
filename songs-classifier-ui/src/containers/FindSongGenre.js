@@ -8,12 +8,18 @@ import AccordionDetails from "@material-ui/core/AccordionDetails";
 import AccordionSummary from "@material-ui/core/AccordionSummary";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import SongGenreService from "../service/service";
+import { CircularProgress } from "@material-ui/core";
 
 const useStyles = makeStyles((theme) => ({
   root: {
     padding: "10px",
     width: "100%",
-    height: "100%",
+    height: "calc(100vh - 252px)",
+    overflow:'auto'
+  },
+  containerPaper:{
+    'margin':'10px',
+
   },
   paper: {
     height: "200px",
@@ -22,6 +28,18 @@ const useStyles = makeStyles((theme) => ({
     "justify-content": "center",
     "text-align": "center",
     background: theme.palette.primary.light,
+    position: "relative",
+  },
+  progressWrapper: {
+    width: "100%",
+    overflow: "hidden",
+    "padding-top": " 50px",
+    "text-align": "center",
+    position: "absolute",
+    background: theme.palette.secondary.main,
+    top: "0",
+    bottom: "0",
+    "z-index": "999",
   },
   accordion: {
     background: theme.palette.secondary.dark,
@@ -47,12 +65,18 @@ export default function FindSongGenre() {
   const [expanded, setExpanded] = useState(false);
   const [uploadedFiles, setuploadedFiles] = useState([]);
   const [uploadedFilesFailed, setuploadedFilesFailed] = useState([]);
+  const [loaderVisible, setLoaderVisible] = useState(false);
+
   const handleAccordionChange = (panel) => (event, isExpanded) => {
     setExpanded(isExpanded ? panel : false);
   };
 
   const onDrop = useCallback(async (acceptedFiles) => {
     let fileArr = [];
+    setLoaderVisible(true);
+    setuploadedFiles([]);
+    setuploadedFilesFailed([]);
+
     let failedFiles = [];
     for (let i = 0; i < acceptedFiles.length; i++) {
       await SongGenreService.upload(acceptedFiles[i])
@@ -67,27 +91,33 @@ export default function FindSongGenre() {
             console.log(response);
             setuploadedFilesFailed(failedFiles);
           }
+          i === acceptedFiles.length - 1 && setLoaderVisible(false);
         });
     }
   }, []);
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
   return (
-    <div className={classes.root}>
-      <Paper elevation={3}>
+    <div>
+      <Paper elevation={3} className={classes.containerPaper}>
         <div {...getRootProps()} className={classes.paper}>
-          <input {...getInputProps()} />
+         { !loaderVisible &&<input {...getInputProps()} />}
           {isDragActive ? (
             <p>Drop the files here ...</p>
           ) : (
             <p>
-              To clasify your songs and see more detail,
+              To clasify your songs and see more details,
               <br />
               Drag&drop some files here, or click to select files
             </p>
           )}
+          {loaderVisible && (
+            <div className={classes.progressWrapper}>
+              <CircularProgress size="100px" />
+            </div>
+          )}
         </div>
       </Paper>
-      <div>
+      <div className={classes.root}>
         {uploadedFiles.map((file) => (
           <Accordion
             expanded={expanded === file.id}
@@ -115,14 +145,16 @@ export default function FindSongGenre() {
                 </Typography>
 
                 <Typography>
-                  Prediction Value: {file.mainType.predictionValue}
+                  Prediction Value:{" "}
+                  {(file.mainType.predictionValue * 100).toFixed(4)}%
                 </Typography>
               </div>
               <div>
                 <Typography>Sub Genre: {file.subType.predictedType}</Typography>
 
                 <Typography>
-                  Prediction Value: {file.subType.predictionValue}
+                  Prediction Value:{" "}
+                  {(file.subType.predictionValue * 100).toFixed(4)}%
                 </Typography>
               </div>
             </AccordionDetails>

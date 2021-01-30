@@ -16,8 +16,29 @@ class SongGenrService {
       .catch((error) => console.log("error occurred!", error));
   }
 
-  getAudioById() {
-    return fetch(this.url + "/song/533/audio");
+  getSongAudioById(id) {
+    return fetch(this.url + `/song/${id}/audio`)
+      .then((response) => {
+        // read() returns a promise that resolves
+        // when a value has been received
+        return response.body
+          .getReader()
+          .read()
+          .then((result) => {
+            return result;
+          });
+      })
+      .catch((error) => console.log("error occurred!", error));
+  }
+  getSongs() {
+    return fetch(this.url + "/song/all")
+      .then((response) => response.json())
+      .catch((error) => console.log("error occurred!", error));
+  }
+  getGenres() {
+    return fetch(this.url + "/genres")
+      .then((response) => response.json())
+      .catch((error) => console.log("error occurred!", error));
   }
 }
 

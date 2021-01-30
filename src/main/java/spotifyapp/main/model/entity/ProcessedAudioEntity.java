@@ -4,14 +4,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import spotifyapp.main.config.BaseEntity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.Lob;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Entity
 @Table(name = "PROCESSED_AUDIO")
@@ -53,6 +46,7 @@ public class ProcessedAudioEntity extends BaseEntity {
   private String filename;
 
   @Lob
+  @Basic(fetch= FetchType.LAZY)
   @Column(name = "FILE", nullable = false)
   private byte[] file;
 

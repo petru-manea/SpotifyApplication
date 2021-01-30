@@ -3,12 +3,13 @@ import { makeStyles } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
 import Typography from "@material-ui/core/Typography";
 import FindSongGenre from "../containers/FindSongGenre";
-import Playlist from "../containers/Playlist";
+import SongList from "../containers/SongsList";
 import {
   BrowserRouter as Router,
   Switch,
   Route,
   NavLink,
+  Redirect,
 } from "react-router-dom";
 import MainPage from "../containers/MainPage";
 
@@ -69,16 +70,20 @@ export default function HeaderTabs() {
               color: "white",
             }}
             className={classes.item}
-            to="/playlist"
+            to="/songsList"
           >
-            Playlist
+            Songs List
           </NavLink>
         </div>
       </AppBar>
       <Switch>
+     <Route exact path="/">
+  <Redirect to="/home" /> : <MainPage />
+</Route>
+
         <Route path="/home" exact component={MainPage} />
         <Route path="/find-song-genre" component={FindSongGenre} />
-        <Route path="/playlist" component={Playlist} />
+        <Route path="/songsList" component={SongList} />
       </Switch>
     </Router>
   );

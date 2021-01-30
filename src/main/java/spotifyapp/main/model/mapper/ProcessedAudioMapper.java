@@ -60,7 +60,6 @@ public class ProcessedAudioMapper {
     dto.setFileType(entity.getFileType());
     dto.setDescription(entity.getDescription());
     dto.setSuccess(entity.getSuccess());
-    //        dto.setPredictedType(predictedTypeMapper.mapEntityToDto(entity.getPredictedType()));
     dto.setMainType(
         new ProcessedAudioTypeDTO(
             predictedTypeMapper.mapEntityToDto(entity.getMainPredictedType()),
@@ -91,7 +90,6 @@ public class ProcessedAudioMapper {
       LOGGER.error("Could not convert from DTO to Entity: " + e.getMessage());
     }
     entity.setSuccess(dto.getSuccess());
-    //        entity.setPredictedType(predictedTypeMapper.mapDtoToEntity(dto.getPredictedType()));
     entity.setMainPredictedType(
         predictedTypeMapper.mapDtoToEntity(dto.getMainType().getPredictedType()));
     entity.setMainPredictedValue(dto.getMainType().getPredictionValue());
