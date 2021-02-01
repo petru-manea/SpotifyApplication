@@ -82,13 +82,11 @@ export default function FindSongGenre() {
       await SongGenreService.upload(acceptedFiles[i])
         // eslint-disable-next-line no-loop-func
         .then((response) => {
-          if (response.status === "OK") {
+          if (response && response.status === "OK") {
             fileArr = [...fileArr, response.data];
-            console.log(response);
             setuploadedFiles(fileArr);
           } else {
             failedFiles = [...failedFiles, acceptedFiles[i]];
-            console.log(response);
             setuploadedFilesFailed(failedFiles);
           }
           i === acceptedFiles.length - 1 && setLoaderVisible(false);

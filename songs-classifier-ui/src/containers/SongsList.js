@@ -37,19 +37,22 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: "#637da2",
   },
   containerPapper:{
-    width:' 50%',
+    width: '50%',
+    height:' 200px',
     margin: 'auto',
-    'text-align': 'center',
-    height: '200px',
     display: 'flex',
-    'align-items': 'center',
+    'text-align': 'center',
+    'justify-content': 'center',
+    'flex-direction': 'column',
+    'margin-top': '10%',
+    'background': 'darkred',
   }
 }));
 
 export default function SongList() {
   const classes = useStyles();
   const [songsList, setSongsList] = useState([]);
-  const [isSongsList, setisSongsList] = useState(false);
+  const [isSongsList, setIsSongsList] = useState(false);
   const [somethingWentWrong, setsomethingWentWrong] = useState(false);
 
   useEffect(() => {
@@ -59,7 +62,6 @@ export default function SongList() {
   });
 
   const getSongList = () => {
-    setisSongsList(true);
     SongGenreService.getSongs().then((resp) => {
       if (resp && resp.data) {
         const data = resp.data.map((song) => ({
@@ -67,6 +69,7 @@ export default function SongList() {
           filename: song.filename.replace(".au", ""),
         }));
         setSongsList(data);
+        setIsSongsList(true);
         setsomethingWentWrong(false);
       } else {
         setsomethingWentWrong(true);
@@ -79,7 +82,7 @@ export default function SongList() {
       <div className={classes.listContainer}>
         {!somethingWentWrong ? (
           <List component="nav" aria-label="songs">
-            {songsList.length ? (
+            {isSongsList ? (
               songsList.map((song, index) => (
                 <div key={song.id}>
                   <ListItem button>
@@ -111,9 +114,13 @@ export default function SongList() {
           </List>
         ) : (
           <Paper elevation={9} className={classes.containerPapper}>
-          <h1>
-          Something went wrong! Please try again.
-          </h1>
+          <h2>
+          Something went wrong! 
+          </h2>
+          <br/>
+          <h2>
+          Please try again.
+          </h2>
           </Paper>
         )}
       </div>

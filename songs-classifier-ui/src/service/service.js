@@ -13,7 +13,7 @@ class SongGenrService {
       body: formData,
     })
       .then((response) => response.json())
-      .catch((error) => console.log("error occurred!", error));
+      .catch((error) => console.error("error occurred!", error));
   }
 
   getSongAudioById(id) {
@@ -28,17 +28,12 @@ class SongGenrService {
             return result;
           });
       })
-      .catch((error) => console.log("error occurred!", error));
+      .catch((error) => console.error("error occurred!", error));
   }
   getSongs() {
     return fetch(this.url + "/song/all")
       .then((response) => response.json())
-      .catch((error) => console.log("error occurred!", error));
-  }
-  getGenres() {
-    return fetch(this.url + "/genres")
-      .then((response) => response.json())
-      .catch((error) => console.log("error occurred!", error));
+      .catch((error) => console.error("error occurred!", error));
   }
 }
 

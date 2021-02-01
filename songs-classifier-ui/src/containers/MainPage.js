@@ -13,7 +13,7 @@ const useStyles = makeStyles((theme) => ({
     margin: "auto",
     padding:' 10px 30px',
     "text-align": "center",
-    height: "60%",
+    height: "70%",
     display: "flex",
     alignItems: "center",
     flexDirection: "column",
