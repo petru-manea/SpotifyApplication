@@ -16,15 +16,16 @@ function App() {
             main: "#1c2841",
           },
           secondary: {
-            main: "#4c516d",
-            contrastText: "#ffcc00",
+            main: "#637da2",
+            contrastText: "#fff",
           },
+          default:{main:"#637da2"},
           background: {
             paper: "#637da2",
             default: "#0b121e",
           },
           text: {
-            icon: "#ffcc00",
+            icon: "#fff",
           },
         },
       }),

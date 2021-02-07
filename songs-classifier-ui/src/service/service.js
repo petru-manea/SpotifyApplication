@@ -30,10 +30,17 @@ class SongGenrService {
       })
       .catch((error) => console.error("error occurred!", error));
   }
-  getSongs() {
-    return fetch(this.url + "/song/all")
-      .then((response) => response.json())
-      .catch((error) => console.error("error occurred!", error));
+  getSongs(id) {
+    const idString = id.toLowerCase();
+    if (idString === "all") {
+      return fetch(this.url + "/song/all")
+        .then((response) => response.json())
+        .catch((error) => console.error("error occurred!", error));
+    } else {
+      return fetch(this.url + "/song?genre="+idString)
+        .then((response) => response.json())
+        .catch((error) => console.error("error occurred!", error));
+    }
   }
 }
 
