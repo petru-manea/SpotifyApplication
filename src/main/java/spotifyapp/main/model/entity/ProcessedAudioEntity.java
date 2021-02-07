@@ -14,8 +14,7 @@ import javax.persistence.*;
       query =
           "SELECT processedAudio FROM "
               + "ProcessedAudioEntity processedAudio "
-              + " WHERE processedAudio.mainPredictedType = :genre OR processedAudio.subPredictedType = "
-              + ":genre")
+              + " WHERE processedAudio.mainPredictedType = :genre")
 })
 @Data
 @EqualsAndHashCode(callSuper = true)

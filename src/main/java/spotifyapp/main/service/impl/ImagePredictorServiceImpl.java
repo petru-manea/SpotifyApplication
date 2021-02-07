@@ -53,7 +53,6 @@ public class ImagePredictorServiceImpl implements ImagePredictorService {
       } else {
         LOGGER.error("Predicted is null!");
       }
-
     } else {
       LOGGER.error("Predicted is null!");
     }
