@@ -75,6 +75,7 @@ export default function SongList() {
   const [isSongsList, setIsSongsList] = useState(false);
   const [somethingWentWrong, setsomethingWentWrong] = useState(false);
   const [selectedGenra, setSelectedGenra] = useState('All');
+  const [isLoading, setIsLoading] = useState(true);
 
   const genres = [
     "All",
@@ -98,10 +99,12 @@ export default function SongList() {
   const getSongList = (id) => {
     setSelectedGenra(id)
     setSongsList([]);
+    setIsSongsList(true);
+    setIsLoading(true);
+    setsomethingWentWrong(false);
 
     SongGenreService.getSongs(id).then((resp) => {
       if (resp && resp.data) {
-       ;
         const data = [...new Map( resp.data.map(item =>
           [item.filename, item])).values()].map((song) => ({
           ...song,
@@ -109,9 +112,18 @@ export default function SongList() {
         }));
         setSongsList(data);
         setIsSongsList(true);
-        setsomethingWentWrong(false);
+      setTimeout(() => {
+        setIsLoading(false)
+
+      }, 800);
+
       } else {
         setsomethingWentWrong(true);
+        setIsSongsList(false);
+        setTimeout(() => {
+          setIsLoading(false)
+  
+        }, 1000);
       }
     });
   };
@@ -125,7 +137,7 @@ export default function SongList() {
         ))}
         {!somethingWentWrong ? (
           <List component="nav" aria-label="songs">
-            {isSongsList ? (
+            {!isLoading ? (
               songsList.map((song, index) => (
                 <div key={song.id}>
                   <ListItem button>
